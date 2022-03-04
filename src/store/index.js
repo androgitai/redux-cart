@@ -28,45 +28,42 @@ const cartSlice = createSlice({
   initialState: cartInitialState,
   reducers: {
     addToCart(state, action) {
-      let current = false;
-      state.cart.forEach(item => {
-        if (item.id === 1) {
-          item.quantity++;
-          item.total = item.total + item.price;
-          current = true;
-        }
-      });
-      if (!current) {
-        const newItem = {
-          id: action.payload.id,
-          title: action.payload.title,
+      const newItem = action.payload;
+      const existingItem = state.cart.find(item => item.id === newItem.id);
+
+      if (existingItem) {
+        existingItem.quantity++;
+        existingItem.total += existingItem.price;
+      }
+
+      if (!existingItem) {
+        const createNewItem = {
+          id: newItem.id,
+          title: newItem.title,
           quantity: 1,
-          total: action.payload.price,
-          price: action.payload.price,
+          total: newItem.price,
+          price: newItem.price,
         };
-        state.cart.push(newItem);
+        state.cart.push(createNewItem);
       }
       state.cartTotalCount++;
     },
     increaseItemCount(state, action) {
-      state.cart.forEach(item => {
-        if (item.id === action.payload) {
-          item.quantity++;
-          item.total = item.total + item.price;
-        }
-      });
+      const existingItem = state.cart.find(item => item.id === action.payload);
+      existingItem.quantity++;
+      existingItem.total += existingItem.price;
       state.cartTotalCount++;
     },
     decreaseItemCount(state, action) {
-      state.cart.forEach(item => {
-        if (item.id === action.payload && item.quantity === 1) {
-          state.cart.pop(item);
-        }
-        if (item.id === action.payload && item.quantity > 1) {
-          item.quantity--;
-          item.total = item.total - item.price;
-        }
-      });
+      const existingItem = state.cart.find(item => item.id === action.payload);
+      if (existingItem.quantity === 1) {
+        state.cart.pop(existingItem);
+      }
+      if (existingItem.quantity > 1) {
+        existingItem.quantity--;
+        existingItem.total -= existingItem.price;
+      }
+
       state.cartTotalCount--;
     },
     toggleShowCart(state) {
