@@ -19,6 +19,8 @@ const productsSlice = createSlice({
 
 const cartInitialState = {
   cart: [],
+  cartTotalCount: 0,
+  showCart: false,
 };
 
 const cartSlice = createSlice({
@@ -26,18 +28,50 @@ const cartSlice = createSlice({
   initialState: cartInitialState,
   reducers: {
     addToCart(state, action) {
-      console.log(action.payload);
-      const newItem = {
-        id: action.payload.id,
-        title: action.payload.title,
-        quantity: 1,
-        total: 69,
-        price: action.payload.price,
-      };
-      state.cart.push(newItem);
+      let current = false;
+      state.cart.forEach(item => {
+        if (item.id === 1) {
+          item.quantity++;
+          item.total = item.total + item.price;
+          current = true;
+        }
+      });
+      if (!current) {
+        const newItem = {
+          id: action.payload.id,
+          title: action.payload.title,
+          quantity: 1,
+          total: action.payload.price,
+          price: action.payload.price,
+        };
+        state.cart.push(newItem);
+      }
+      state.cartTotalCount++;
     },
-    increaseItemCount() {},
-    decreaseItemCount() {},
+    increaseItemCount(state, action) {
+      state.cart.forEach(item => {
+        if (item.id === action.payload) {
+          item.quantity++;
+          item.total = item.total + item.price;
+        }
+      });
+      state.cartTotalCount++;
+    },
+    decreaseItemCount(state, action) {
+      state.cart.forEach(item => {
+        if (item.id === action.payload && item.quantity === 1) {
+          state.cart.pop(item);
+        }
+        if (item.id === action.payload && item.quantity > 1) {
+          item.quantity--;
+          item.total = item.total - item.price;
+        }
+      });
+      state.cartTotalCount--;
+    },
+    toggleShowCart(state) {
+      state.showCart = !state.showCart;
+    },
   },
 });
 
