@@ -1,4 +1,5 @@
 import { createSlice, configureStore } from '@reduxjs/toolkit';
+import uiSlice from './ui-slice';
 
 const productsInitialState = {
   products: [
@@ -7,6 +8,12 @@ const productsInitialState = {
       title: 'Test',
       description: 'This is a first product - amazing!',
       price: 6.0,
+    },
+    {
+      id: 2,
+      title: 'Test 2',
+      description: 'This is the second product - amazing!',
+      price: 9.0,
     },
   ],
 };
@@ -20,7 +27,6 @@ const productsSlice = createSlice({
 const cartInitialState = {
   cart: [],
   cartTotalCount: 0,
-  showCart: false,
 };
 
 const cartSlice = createSlice({
@@ -66,14 +72,15 @@ const cartSlice = createSlice({
 
       state.cartTotalCount--;
     },
-    toggleShowCart(state) {
-      state.showCart = !state.showCart;
-    },
   },
 });
 
 const store = configureStore({
-  reducer: { products: productsSlice.reducer, cart: cartSlice.reducer },
+  reducer: {
+    products: productsSlice.reducer,
+    cart: cartSlice.reducer,
+    ui: uiSlice.reducer,
+  },
 });
 
 export const cartActions = cartSlice.actions;
